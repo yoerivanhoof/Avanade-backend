@@ -26,7 +26,7 @@ var io = require('socket.io')(server);
 
 
 
-var users = {};
+var users = [];
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
     if(users[socket.handshake.address] != null && users[socket.handshake.address] != "" && users[socket.handshake.address] != 'undefined'){
@@ -41,7 +41,12 @@ io.on('connection', function(socket){
 
 
   socket.on('add user', function(msg){
-    users[socket.handshake.address] = msg;
+
+    users.push({
+       "ip" : socket.handshake.address,
+        "name" : msg
+    });
+   // users[socket.handshake.address] = msg;
     socket.emit('response', "ACK");
   });
 
