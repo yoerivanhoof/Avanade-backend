@@ -29,10 +29,6 @@ var io = require('socket.io')(server);
 var users = [];
 var userinfo = [];
 
-function getName(socket){
-  return
-  return '';
-}
 
 io.on('connection', function(socket){
   console.log('a user connected '+socket.handshake.address);
@@ -65,25 +61,34 @@ io.on('connection', function(socket){
         userinfo.forEach(function (value1, index1) {
           if(value1.socket.id == socket.id){
             console.log(value1.name +" wants to connect to "+name);
-            value.socket.emit('connect request', value1.name );
 
-            var chat = io.of('/value.socket.id+""+value1.socket.id');
+
+            var chat = io.of("/"+value.socket.id+""+value1.socket.id);
             chat.on('connection', function (socket2) {
               console.log(socket2.handshake.address + " joined namespace");
 
-              chat.on('chat message', function(msg){
-
-                  chat.emit('chat message', msg);
+              socket2.on('chat message', function(msg){
+                  console.log("received "+msg);
+                  socket2.broadcast.emit('chat message',msg);
+                  //chat.broad.emit('chat message', msg);
 
 
               });
 
             });
 
+            var connectinfo = {
+              'name':value1.name,
+              'namespace':"/"+value.socket.id+""+value1.socket.id
+            };
+            value.socket.emit('connect request', JSON.stringify(connectinfo) );
 
+            var connectinfo1 = {
+              'name':value.name,
+              'namespace':"/"+value.socket.id+""+value1.socket.id
+            };
+            value1.socket.emit('connect request', JSON.stringify(connectinfo1 ));
 
-            value.socket.emit('namespace',value.socket.id+""+value1.socket.id);
-            value1.socket.emit('namespace',value.socket.id+""+value1.socket.id);
 
 
 
